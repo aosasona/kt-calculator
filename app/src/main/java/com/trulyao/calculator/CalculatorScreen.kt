@@ -30,8 +30,8 @@ fun CalculatorScreen() {
         return (if (value.toFloat() % 1.0 == 0.0) {
             "%,d".format(value.toFloat().toInt())
         } else {
-            "%,9f".format(value.toFloat())
-        }).trim().trimEnd('0').trimEnd('.')
+            "%,9f".format(value.toFloat()).trimEnd('0').trimEnd('.')
+        }).trim().trimEnd(',')
     }
 
     fun handleKeyPress(key: Key) {
@@ -132,7 +132,8 @@ fun CalculatorScreen() {
                             ""
                         },
                         color = MaterialTheme.colorScheme.secondary,
-                        fontSize = 72.sp,
+                        fontSize = 80.sp,
+                        lineHeight = 90.sp
                     )
                 }
             }
