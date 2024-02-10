@@ -10,11 +10,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 val buttons = listOf(
-    listOf(Key.Clear, Key.Exponent, Key.Delete, Key.Plus),
+    listOf(Key.Clear, Key.Delete, Key.Exponent, Key.Plus),
     listOf(Key.Nine, Key.Eight, Key.Seven, Key.Subtract),
     listOf(Key.Six, Key.Five, Key.Four, Key.Multiply),
     listOf(Key.Three, Key.Two, Key.One, Key.Divide),
-    listOf(Key.Zero, Key.Dot,  Key.Equals),
+    listOf(Key.Zero, Key.Dot, Key.Equals),
 );
 
 @Composable
@@ -22,8 +22,6 @@ fun Keypad(handleKeyPress: (Key) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-//            .padding(horizontal = 10.dp)
-//            .padding(bottom = 18.dp)
     ) {
         buttons.forEach { members ->
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -46,7 +44,7 @@ fun Keypad(handleKeyPress: (Key) -> Unit) {
                         modifier = Modifier
                             .height(95.dp)
                             .clip(CircleShape)
-                            .padding(6.dp)
+                            .padding(7.dp)
                             .weight(if (button == Key.Equals) 0.5f else 0.25f)
                     ) {
                         Text(

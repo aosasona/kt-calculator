@@ -13,6 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.trulyao.calculator.ui.theme.CalculatorTheme
+import java.text.NumberFormat
+import java.util.Locale
+import kotlin.math.pow
 
 
 @Composable
@@ -21,13 +24,24 @@ fun CalculatorScreen() {
     var previousValue by remember { mutableStateOf("") }
     var operand by remember { mutableStateOf(Key.None) }
 
+    fun formatForDisplay(value: String): String {
+        if (value.endsWith(".")) return value; // handle cases where the user is just entering a decimal point
+
+        return (if (value.toFloat() % 1.0 == 0.0) {
+            "%,d".format(value.toFloat().toInt())
+        } else {
+            "%,9f".format(value.toFloat())
+        }).trim().trimEnd('0').trimEnd('.')
+    }
+
     fun handleKeyPress(key: Key) {
         when (key.type) {
-            KeyType.Number ->  {
+            KeyType.Number -> {
                 if (currentValue.length >= 9) return;
-                if (key.value ==  "." && currentValue.contains(".")) return;
+                if (key.value == "." && currentValue.contains(".")) return;
                 currentValue += key.value
             }
+
             KeyType.Special -> when (key) {
                 Key.Delete -> {
                     if (currentValue.isEmpty()) return;
@@ -39,9 +53,47 @@ fun CalculatorScreen() {
                     previousValue = "";
                     operand = Key.None;
                 }
+
                 else -> print("Unhandled special key")
             }
-            else -> println("Unhandled event")
+
+            KeyType.Operand -> {
+                when (key) {
+                    Key.None -> return;
+                    Key.Equals -> {
+                        val prev = previousValue.toFloatOrNull()
+                        val curr = currentValue.toFloatOrNull()
+                        if (prev == null || curr == null || operand == Key.None) return;
+
+                        val result = when (operand) {
+                            Key.Plus -> prev + curr
+                            Key.Subtract -> prev - curr
+                            Key.Multiply -> prev * curr
+                            Key.Divide -> prev / curr
+                            Key.Exponent -> prev.pow(curr.toInt())
+                            else -> {
+                                println("Unknown operand detected")
+                                curr
+                            }
+                        }
+
+                        operand = Key.None
+                        previousValue = ""
+                        currentValue = if ((result % 1.0) == 0.0) result.toInt().toString() else "%9f".format(result)
+                    }
+
+                    else -> {
+                        // When you use any of the operands, the next input should be into the currentValue, there are some nuances though
+                        // If the previous value has something in it, we leave it there
+                        // If the previous value has nothing  in it, we move the current value to the previous value so that subsequent input can go in there
+                        operand = key
+                        if (previousValue.isEmpty()) {
+                            previousValue = currentValue
+                            currentValue = ""
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -55,15 +107,34 @@ fun CalculatorScreen() {
                 .fillMaxSize()
                 .padding(vertical = 10.dp)
                 .padding(horizontal = 12.dp)
+                .fillMaxHeight()
         ) {
-            Box(modifier = Modifier) {
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+            ) {
                 Header()
 
-                Text(
-                    if (currentValue.isNotEmpty()) currentValue else previousValue,
-                    color = MaterialTheme.colorScheme.secondary,
-                    fontSize = 52.sp,
-                )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp)
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text(
+                        // This is a very hacky way but whatever
+                        if (currentValue.isNotEmpty()) {
+                            formatForDisplay(currentValue)
+                        } else if (previousValue.isNotEmpty()) {
+                            formatForDisplay(previousValue)
+                        } else {
+                            ""
+                        },
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontSize = 72.sp,
+                    )
+                }
             }
 
             Keypad(handleKeyPress = { key -> handleKeyPress(key) })

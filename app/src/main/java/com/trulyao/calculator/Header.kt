@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,14 +19,21 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Header() {
     val context = LocalContext.current
-    val githubIntent = remember { Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/aosasona/csy2091-mobile-dev/tree/master/class-two")) }
+    val githubIntent = remember {
+        Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("https://github.com/aosasona/kt-calculator")
+        ) }
 
-    Box (modifier = Modifier.padding(vertical = 4.dp)) {
+    Row (modifier = Modifier
+        .padding(0.dp)
+        .padding(vertical = 4.dp)) {
         TextButton(
-            onClick = { context.startActivity(githubIntent) }
+            onClick = { context.startActivity(githubIntent) },
         ) {
-            Icon(Icons.Default.FavoriteBorder, "Star on GitHub")
-            Text("Star on GitHub")
+            Icon(Icons.Default.FavoriteBorder, "View on GitHub", tint = MaterialTheme.colorScheme.secondary)
+            Spacer(modifier = Modifier.width(4.dp))
+            Text("View on GitHub", color = MaterialTheme.colorScheme.secondary)
         }
     }
 }

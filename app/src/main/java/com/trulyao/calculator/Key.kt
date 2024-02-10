@@ -28,5 +28,3 @@ enum class Key(val value: String, val type: KeyType) {
     Delete("⌫", KeyType.Special),
     None("", KeyType.Operand);
 }
-
-data class CalculatorStateModel(var previousValue: String, var currentValue: String, var operand: Key)
